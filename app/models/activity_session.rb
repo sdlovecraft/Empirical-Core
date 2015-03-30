@@ -17,7 +17,7 @@ class ActivitySession < ActiveRecord::Base
   before_save   :set_completed_at
   before_save   :set_activity_id
 
-  after_save    :determine_if_final_score
+  # after_save    :determine_if_final_score
 
 
   around_save   :trigger_events
@@ -59,6 +59,13 @@ class ActivitySession < ActiveRecord::Base
     query
   end
 
+  def self.with_best_scores
+    ActivitySession.select('DISTINCT ON (activity_sessions.user_id, activity_sessions.activity_id) activity_sessions.id, MAX(activity_sessions.percentage)')
+      .having('activity_sessions.percentage = MAX(activity_sessions.percentage)')
+      .group('activity_sessions.id')
+      .order('activity_sessions.user_id, activity_sessions.activity_id, activity_sessions.id asc')
+  end
+
   def self.with_filters(query, filters)
     # Some duplication between here and ConceptTagResult
     if filters[:classroom_id].present?
@@ -88,32 +95,32 @@ class ActivitySession < ActiveRecord::Base
     self.joins(:user => :teacher).where(teachers_users: {id: teacher.id})
   end
 
-  def determine_if_final_score
-    if self.percentage.present?
-      a = ActivitySession.where(activity_id: self.activity_id)
-                        .where(user: self.user)
-                        .where.not(id: self.id)
-                        .where.not(percentage: nil)
+  # def determine_if_final_score
+  #   if self.percentage.present?
+  #     a = ActivitySession.where(activity_id: self.activity_id)
+  #                       .where(user: self.user)
+  #                       .where.not(id: self.id)
+  #                       .where.not(percentage: nil)
 
-      if a.empty?
-        self.update_columns is_final_score: true
-      else
-        max = a.max_by{|x| x.percentage }
-        if self.percentage > max.percentage
-          self.update_columns is_final_score: true
-          max.update_columns is_final_score: false
-        else
-          self.update_columns is_final_score: false
-          max.update_columns is_final_score: true
-        end
-        others = a.reject{|x| x==max}
-        others.each{|x| x.update_columns(is_final_score: false) }
-      end
-    end
+  #     if a.empty?
+  #       self.update_columns is_final_score: true
+  #     else
+  #       max = a.max_by{|x| x.percentage }
+  #       if self.percentage > max.percentage
+  #         self.update_columns is_final_score: true
+  #         max.update_columns is_final_score: false
+  #       else
+  #         self.update_columns is_final_score: false
+  #         max.update_columns is_final_score: true
+  #       end
+  #       others = a.reject{|x| x==max}
+  #       others.each{|x| x.update_columns(is_final_score: false) }
+  #     end
+  #   end
 
-    # return true otherwise save will be prevented
-    return true
-  end
+  #   # return true otherwise save will be prevented
+  #   return true
+  # end
 
   def activity
     super || classroom_activity.activity

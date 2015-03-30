@@ -28,6 +28,15 @@ module Teacher
       users = classrooms.map(&:students).flatten.compact.uniq
     end
 
+    # Retrieve the IDs of the sessions with MAX(percentage)
+    best_score_sessions = ActivitySession.with_best_scores.by_teacher(self)
+
+    # Retrieve the IDs of the incomplete sessions
+    incomplete_sessions = ActivitySession.select('activity_sessions.id, activity_sessions.percentage').incomplete.by_teacher(self)
+
+    # Union of both of the above to get the full set of IDs
+    session_union = "SELECT * FROM best_score_sessions UNION SELECT * FROM incomplete_sessions"
+
     results = ActivitySession.select("users.name, activity_sessions.id, activity_sessions.percentage,
                                 substring(
                                     users.name from (
@@ -49,10 +58,13 @@ module Teacher
                                   ) as sorting_name
 
                               ")
+                              .with(best_score_sessions: best_score_sessions)
+                              .with(incomplete_sessions: incomplete_sessions)
+                              .with(sessions_to_display: session_union)
+                              .joins('JOIN sessions_to_display ON sessions_to_display.id = activity_sessions.id')
                               .includes(:user, :activity => [:classification, :topic => [:section, :topic_category]])
                               .references(:user)
                               .where(user: users)
-                              .where('(activity_sessions.is_final_score = true) or ((activity_sessions.completed_at IS NULL) and activity_sessions.is_retry = false)')
 
     if unit_id.present?
       classroom_activity_ids = Unit.find(unit_id).classroom_activities.map(&:id)
