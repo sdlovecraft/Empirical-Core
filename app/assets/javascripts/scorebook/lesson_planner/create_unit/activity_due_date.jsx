@@ -1,7 +1,8 @@
+"use strict";
 EC.ActivityDueDate = React.createClass({
+
   componentDidMount: function() {
     // Set up the datepicker on the dueDate input
-
     $(this.refs.dueDate.getDOMNode()).datepicker({
       selectOtherMonths: true,
       dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -13,13 +14,17 @@ EC.ActivityDueDate = React.createClass({
       onSelect: this.handleChange
     });
 
+    if (this.props.dueDate != undefined) {
+      $(this.refs.dueDate.getDOMNode()).datepicker('setDate', this.props.dueDate);
+    }
+
   },
 
   tooltipTrigger: function (e) {
     e.stopPropagation();
     $(this.refs.activateTooltip.getDOMNode()).tooltip('show');
-
   },
+
   tooltipTriggerStop: function (e) {
     e.stopPropagation();
     $(this.refs.activateTooltip.getDOMNode()).tooltip('hide');

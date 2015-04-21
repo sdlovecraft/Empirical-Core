@@ -271,6 +271,7 @@ EC.Stage1 = React.createClass({
           <EC.Pagination maxPageNumber={this.state.maxPageNumber} selectPageNumber={this.selectPageNumber} currentPage={this.state.currentPage} numberOfPages={this.state.numberOfPages}  />
 
           <EC.SelectedActivities clickContinue={this.props.clickContinue}
+                                 unitName={this.props.unitName}
                                  isEnoughInputProvided={this.props.isEnoughInputProvidedForStage1}
                                  errorMessage={this.props.errorMessage}
                                  selectedActivities = {this.props.selectedActivities}

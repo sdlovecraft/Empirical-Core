@@ -38,6 +38,18 @@ EC.Classroom = React.createClass({
     }
   },
 
+  determinePanelCollapseClass: function () {
+    // include 'in' if it should be open
+    var selectedStudents = _.where(this.props.students, {isSelected: true});
+    var someSelected = (selectedStudents.length > 0);
+    var notAllSelected = (selectedStudents.length < this.props.students.length);
+    if (someSelected && notAllSelected) {
+      return 'panel-collapse collapse in';
+    } else {
+      return "panel-collapse collapse";
+    }
+  },
+
   render: function() {
     var studentList = this.props.students.map(function(student) {
       return <EC.Student student={student} classroom={this.props.classroom} toggleStudentSelection={this.props.toggleStudentSelection} />;
@@ -64,7 +76,7 @@ EC.Classroom = React.createClass({
               </div>
             </h4>
           </div>
-          <div className="panel-collapse collapse" ref="studentList">
+          <div className={this.determinePanelCollapseClass()} ref="studentList">
             <div className="panel-body">
               {studentList}
             </div>

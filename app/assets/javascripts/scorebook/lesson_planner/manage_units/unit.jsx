@@ -1,5 +1,10 @@
 "use strict";
 EC.Unit = React.createClass({
+
+	editUnit: function () {
+		this.props.editUnit(this.props.data);
+	},
+
 	deleteUnit: function () {
 		var x = confirm("Are you sure you want to delete this Unit? It will delete all assignments given to students associated with this unit, even if those assignments have already been completed.");
 		if (x) {
@@ -51,7 +56,8 @@ EC.Unit = React.createClass({
 			<section >
 				<div className="row vertical-align">
 					<h3 className="col-md-10 vcenter">{this.props.data.unit.name}</h3>
-					<div className="col-md-2 vcenter pull-right delete-unit" onClick={this.deleteUnit}>Delete Unit</div>
+					<div className="col-md-1 vcenter edit-unit" onClick={this.editUnit}>Edit</div>
+					<div className="col-md-1 vcenter pull-right delete-unit" onClick={this.deleteUnit}>Delete</div>
 				</div>
 				<div className="unit-label">
 					{this.assignedToText()}

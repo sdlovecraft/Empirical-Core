@@ -1,8 +1,10 @@
+"use strict";
 EC.UnitTabs = React.createClass({
 
 	selectCreateUnit: function () {
 		this.props.toggleTab('createUnit');
 	},
+
 	selectManageUnits: function () {
 		this.props.toggleTab('manageUnits');
 	},
@@ -29,8 +31,4 @@ EC.UnitTabs = React.createClass({
 			</div>
 		);
 	}
-
-
 });
-
-

@@ -3,12 +3,12 @@ EC.CreateUnit = React.createClass({
 
 	getInitialState: function () {
 		return {
-			unitName: null,
+			unitName: this.props.unitName,
 			stage: 1, // stage 1 is selecting activities, stage 2 is selecting students and dates
-			selectedActivities : [],
+			selectedActivities : this.props.selectedActivities,
 			selectedClassrooms: [],
 			classrooms: [],
-			dueDates: {}
+			dueDates: this.props.dueDates
 		}
 	},
 
@@ -86,18 +86,42 @@ EC.CreateUnit = React.createClass({
       url: '/teachers/classrooms/retrieve_classrooms_for_assigning_activities',
       context: this,
       success: function (data) {
+        if (that.props.isInEditMode) {
+        	_.each(data.classrooms_and_their_students, function (c) {
+        		var extant = _.findWhere(that.props.selectedClassrooms, {id: c.id});
+        		if (extant != undefined) {
+        			if (extant.assigned_student_ids.length == 0) {
+        				_.each(c.students, function (s) {
+        					s.isSelected = true;
+        				});
+        			} else {
+        				_.each(extant.assigned_student_ids, function (id) {
+        					var relevantParty = _.findWhere(c.students, {id: id});
+        					relevantParty.isSelected = true;
+        				});
+        			}
+        		}
+        	});
+        }
         that.setState({classrooms: data.classrooms_and_their_students});
-      },
-      error: function () {
-        console.log('error fetching classrooms');
       }
     });
   },
 
 	finish: function() {
+		var method, url;
+		if (this.props.isInEditMode == true) {
+			method = 'PUT';
+			url = '/teachers/units/' + this.props.unitId;
+		} else {
+			method = 'POST';
+			url = '/teachers/units';
+		}
+		console.log('url', url);
+		console.log('method', method);
 		$.ajax({
-			type: 'POST',
-			url: '/teachers/units',
+			type: method,
+			url: url,
 			data: this.formatCreateRequestData(),
 			success: this.onCreateSuccess,
 		});
@@ -215,7 +239,8 @@ EC.CreateUnit = React.createClass({
 								 errorMessage={this.determineStage1ErrorMessage()}
 								 clickContinue={this.clickContinue} />;
 		} else {
-			stageSpecificComponents = <EC.Stage2 selectedActivities={this.state.selectedActivities}
+			stageSpecificComponents = <EC.Stage2 isInEditMode={this.props.isInEditMode}
+																					 selectedActivities={this.state.selectedActivities}
 																					 classrooms={this.state.classrooms}
 																					 toggleActivitySelection={this.toggleActivitySelection}
 																					 toggleClassroomSelection={this.toggleClassroomSelection}
@@ -225,6 +250,7 @@ EC.CreateUnit = React.createClass({
 																					 assignActivityDueDate={this.assignActivityDueDate}
 																					 areAnyStudentsSelected={this.areAnyStudentsSelected()}
 																					 areAllDueDatesProvided={this.areAllDueDatesProvided()}
+																					 dueDates={this.state.dueDates}
 																					 errorMessage={this.determineStage2ErrorMessage()}/>;
 		}
 		return (

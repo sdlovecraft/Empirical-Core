@@ -1,5 +1,5 @@
+"use strict";
 EC.ManageUnits = React.createClass({
-
 
 	getInitialState: function () {
 		return {
@@ -81,9 +81,10 @@ EC.ManageUnits = React.createClass({
 				<div  className= "create-unit-button-container">
 					<button onClick={this.switchToCreateUnit} className="button-green create-unit">Create a New Unit</button>
 				</div>
-				<EC.Units 
+				<EC.Units
 					updateDueDate={this.updateDueDate}
 					deleteClassroomActivity={this.deleteClassroomActivity}
+					editIndividualUnit={this.props.editIndividualUnit}
 					deleteUnit={this.deleteUnit} data={this.state.units} />
 			</div>
 		);

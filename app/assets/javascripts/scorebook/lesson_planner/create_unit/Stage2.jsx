@@ -35,16 +35,22 @@ EC.Stage2 = React.createClass({
   },
 
   determineButtonText: function () {
-    if (!this.state.buttonDisabled) {
-      return "Assign";
+    if (this.props.isInEditMode) {
+      if (!this.state.buttonDisabled) {
+        return 'Update';
+      } else {
+        return 'Updating...';
+      }
     } else {
-      return "Assigning...";
+      if (!this.state.buttonDisabled) {
+        return 'Assign';
+      } else {
+        return 'Assigning...';
+      }
     }
   },
 
   render: function() {
-    console.log('areAnyStudentsSelected', this.props.areAnyStudentsSelected)
-    console.log('areAllDueDatesProvided', this.props.areAllDueDatesProvided)
     var classroomList = this.props.classrooms.map(function(entry) {
       return <EC.Classroom classroom={entry.classroom}
                            students={entry.students}
@@ -55,6 +61,7 @@ EC.Stage2 = React.createClass({
 
     var dueDateList = this.props.selectedActivities.map(function(activity) {
       return <EC.ActivityDueDate activity={activity}
+                                 dueDate={this.props.dueDates[activity.id]}
                                  toggleActivitySelection={this.props.toggleActivitySelection}
                                  assignActivityDueDate={this.props.assignActivityDueDate}/>;
     }, this);

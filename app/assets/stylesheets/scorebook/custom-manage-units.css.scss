@@ -33,9 +33,12 @@
 	}
 
 
-	.delete-unit {
+	.edit-unit, .delete-unit {
 		cursor: pointer;
 		color: #137779;
+	}
+
+	.delete-unit {
 		text-align:right;
 		padding-right: 30px;
 	}
