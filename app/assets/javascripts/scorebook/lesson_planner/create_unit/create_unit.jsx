@@ -100,7 +100,7 @@ EC.CreateUnit = React.createClass({
         			} else {
         				_.each(extant.assigned_student_ids, function (id) {
         					var relevantParty = _.findWhere(c.students, {id: id});
-        					if (relevantPary != undefined) {
+        					if (relevantParty != undefined) {
         						relevantParty.isSelected = true;
         					}
         				});
