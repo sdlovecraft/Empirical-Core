@@ -93,7 +93,7 @@ EC.CreateUnit = React.createClass({
         	_.each(data.classrooms_and_their_students, function (c) {
         		var extant = _.findWhere(that.props.selectedClassrooms, {id: c.id});
         		if (extant != undefined) {
-        			if (extant.assigned_student_ids.length == 0) {
+        			if ((extant.assigned_student_ids == null) || (extant.assigned_student_ids.length == 0)) {
         				_.each(c.students, function (s) {
         					s.isSelected = true;
         				});
