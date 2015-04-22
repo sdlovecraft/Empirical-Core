@@ -6,7 +6,6 @@ describe Unit, type: :model do
 	let!(:classroom_activity) {FactoryGirl.create(:classroom_activity_with_activity, classroom: classroom)}
 	let!(:unit) {FactoryGirl.create :unit, classroom_activities: [classroom_activity]}
 
-
 	describe '#destroy' do
 
 		it 'destroys associated classroom_activities' do
@@ -48,6 +47,20 @@ describe Unit, type: :model do
 
       it 'can retrieve units based on classroom_id' do
         expect(subject.size).to eq(1)
+      end
+    end
+  end
+
+  describe '#update_extant_ca' do
+    describe '#update_relevant_activity_sessions' do
+      let!(:student2) {FactoryGirl.create(:student, classroom: classroom)}
+      let!(:classroom_data) { {id: classroom.id, all_students: false, student_ids: [student.id]} }
+      it 'does not destroy activity_session belonging to a student who is still in the list of assigned' do
+
+      end
+
+      it 'does destroy the activity_session belonging to the student who is no longer on the list of the assigned' do
+
       end
     end
   end

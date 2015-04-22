@@ -7,21 +7,7 @@ class ClassroomActivity < ActiveRecord::Base
 
   scope :with_topic, ->(tid) { joins(:topic).where(topics: {id: tid}) }
 
-
   after_create :assign_to_students
-
-  def self.mass_unassign_students_by_id classroom_activities, student_ids
-    ActivitySession.where(user_id: student_ids, classroom_activity: classroom_activities).destroy_all
-  end
-
-  def self.mass_update_assigned classroom_activities, student_ids
-    ClassroomActivity.where(id: classroom_activities.map(&:id)).update_all(assigned_student_ids: student_ids)
-  end
-
-  def self.mass_update_assigned_and_assign classroom_activities, student_ids
-    self.mass_update_assigned classroom_activities, student_ids
-    classroom_activities.each(&:assign_to_students)
-  end
 
   def assigned_students
     User.where(id: assigned_student_ids)
@@ -56,8 +42,6 @@ class ClassroomActivity < ActiveRecord::Base
       classroom.students
     end
   end
-
-
 
   def completed
     activity_sessions.completed.includes([:user, :activity]).joins(:user).where('users.role' == 'student')
