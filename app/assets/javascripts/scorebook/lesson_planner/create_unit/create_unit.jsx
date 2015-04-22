@@ -8,7 +8,8 @@ EC.CreateUnit = React.createClass({
 			selectedActivities : this.props.selectedActivities,
 			selectedClassrooms: [],
 			classrooms: [],
-			dueDates: this.props.dueDates
+			dueDates: this.props.dueDates,
+			formattedDueDates: this.props.formattedDueDates
 		}
 	},
 
@@ -20,12 +21,14 @@ EC.CreateUnit = React.createClass({
 
 	toggleActivitySelection: function (true_or_false, activity) {
 		var selectedActivities = this.state.selectedActivities;
-		if (true_or_false) {
+		var dueDates = this.state.dueDates;
+		if (true_or_false == true) {
 			selectedActivities.push(activity);
 		} else {
 			selectedActivities = _.reject(selectedActivities, activity);
+			delete dueDates[activity.id];
 		}
-		this.setState({selectedActivities: selectedActivities});
+		this.setState({selectedActivities: selectedActivities, dueDates: dueDates});
 	},
 
 	toggleClassroomSelection: function(classroom, flag) {
@@ -117,11 +120,11 @@ EC.CreateUnit = React.createClass({
 			method = 'POST';
 			url = '/teachers/units';
 		}
-		console.log('url', url);
-		console.log('method', method);
 		$.ajax({
 			type: method,
 			url: url,
+			contentType: 'application/json',
+			dataType: 'json',
 			data: this.formatCreateRequestData(),
 			success: this.onCreateSuccess,
 		});
@@ -139,19 +142,21 @@ EC.CreateUnit = React.createClass({
 		});
 
 		classroomPostData = _.map(classroomPostData, function (c) {
-			var selectedStudentIds;
+			var selectedStudentIds, allStudents;
 			var selectedStudents = _.where(c.students, {isSelected: true});
 			if (selectedStudents.length == c.students.length) {
 				selectedStudentIds = [];
+				allStudents = true;
 			} else {
 				selectedStudentIds = _.map(selectedStudents, function (s) {return s.id});
+				allStudents = false;
 			}
-			return {id: c.classroom.id, student_ids: selectedStudentIds};
+			return {id: c.classroom.id, all_students: allStudents,  student_ids: selectedStudentIds};
 		});
 
 		var activityPostData = _.map(this.state.dueDates, function(key, value) {
 			return {
-				id: value,
+				id: parseInt(value),
 				due_date: key
 			}
 		});
@@ -162,7 +167,8 @@ EC.CreateUnit = React.createClass({
 				activities: activityPostData
 			}
 		};
-		return x;
+		var stringified = JSON.stringify(x);
+		return stringified;
 	},
 
 	onCreateSuccess: function(response) {
@@ -250,7 +256,7 @@ EC.CreateUnit = React.createClass({
 																					 assignActivityDueDate={this.assignActivityDueDate}
 																					 areAnyStudentsSelected={this.areAnyStudentsSelected()}
 																					 areAllDueDatesProvided={this.areAllDueDatesProvided()}
-																					 dueDates={this.state.dueDates}
+																					 formattedDueDates={this.state.formattedDueDates}
 																					 errorMessage={this.determineStage2ErrorMessage()}/>;
 		}
 		return (

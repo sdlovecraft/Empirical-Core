@@ -36,8 +36,12 @@ class ClassroomActivity < ActiveRecord::Base
   end
 
   def session_for user
-    ass = activity_sessions.where(user: user, activity: activity).order(created_at: :asc)
-    as = if ass.any? then ass.first else activity_sessions.create(user: user, activity: activity) end
+    session_for_by_id user.id
+  end
+
+  def session_for_by_id user_id
+    ass = activity_sessions.where(user_id: user_id, activity: activity).order(created_at: :asc)
+    as = if ass.any? then ass.first else activity_sessions.create(user_id: user_id, activity: activity) end
   end
 
   def for_student? student

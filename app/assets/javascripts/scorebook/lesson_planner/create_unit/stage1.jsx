@@ -76,9 +76,6 @@ EC.Stage1 = React.createClass({
       context: this,
       data: this.searchRequestData(),
       success: this.searchRequestSuccess,
-      error: function () {
-        //console.log('error searching activities');
-      }
     });
   },
 

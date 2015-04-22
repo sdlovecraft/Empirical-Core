@@ -24,7 +24,6 @@ EC.SelectedActivities = React.createClass({
 	},
 
 	determineContinueButtonClass: function () {
-		console.log('calling determine continue button class', this.props.isEnoughInputProvided)
 		if (this.props.isEnoughInputProvided) {
 			return 'button-green pull-right';
 		} else {

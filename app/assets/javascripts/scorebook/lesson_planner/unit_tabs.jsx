@@ -2,11 +2,23 @@
 EC.UnitTabs = React.createClass({
 
 	selectCreateUnit: function () {
-		this.props.toggleTab('createUnit');
+		if (this.props.tab == 'manageUnits') {
+			this.props.toggleTab('createUnit');
+		}
 	},
 
 	selectManageUnits: function () {
-		this.props.toggleTab('manageUnits');
+		if (this.props.tab != 'manageUnits') {
+			this.props.toggleTab('manageUnits');
+		}
+	},
+
+	determineCreateAUnitTabText: function () {
+		if (this.props.isInEditIndividualUnitMode == true) {
+			return "Edit a Unit";
+		} else {
+			return "Create a Unit";
+		}
 	},
 
 	render: function () {
@@ -24,8 +36,7 @@ EC.UnitTabs = React.createClass({
 				<div className="container">
 					<ul>
 						<li onClick={this.selectManageUnits}><a className={manageUnitsClass}>My Units</a></li>
-						<li onClick={this.selectCreateUnit}><a className={createUnitClass}>Create a Unit</a></li>
-
+						<li onClick={this.selectCreateUnit}><a className={createUnitClass}>{this.determineCreateAUnitTabText()}</a></li>
 					</ul>
 				</div>
 			</div>

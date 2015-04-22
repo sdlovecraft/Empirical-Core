@@ -34,19 +34,20 @@ EC.LessonPlanner = React.createClass({
 
 	getDueDatesForEditMode: function () {
 		var dueDates = {};
+		var formattedDueDates = {};
 		if (this.state.isInEditIndividualUnitMode) {
 			_.each(this.state.individualUnitToEdit.classroom_activities, function (ca) {
 				dueDates[ca.activity.id] = ca.due_date;
+				formattedDueDates[ca.activity.id] = ca.formatted_due_date;
 			});
 		}
-		return dueDates;
+		return {dueDates: dueDates, formattedDueDates: formattedDueDates};
 	},
 
 	getSelectedClassroomsForEditMode: function () {
 		if (this.state.isInEditIndividualUnitMode) {
 			return _.map(this.state.individualUnitToEdit.classroom_activities, function (ca) {
 				var x1 = {classroom_id: ca.classroom_id, assigned_student_ids: ca.assigned_student_ids};
-				console.log('x1', x1)
 				return x1;
 			});
 		} else {
@@ -68,7 +69,6 @@ EC.LessonPlanner = React.createClass({
 	},
 
 	editIndividualUnit: function (unit) {
-		console.log('editIndividualUnit', unit);
 		this.setState({tab: 'createUnit', isInEditIndividualUnitMode: true, individualUnitToEdit: unit});
 	},
 
@@ -80,7 +80,8 @@ EC.LessonPlanner = React.createClass({
 																						 unitId={this.getUnitIdForEditMode()}
 																						 selectedClassrooms={this.getSelectedClassroomsForEditMode()}
 																						 selectedActivities={this.getSelectedActivitiesForEditMode()}
-																						 dueDates={this.getDueDatesForEditMode()}
+																						 dueDates={this.getDueDatesForEditMode().dueDates}
+																						 formattedDueDates={this.getDueDatesForEditMode().formattedDueDates}
 																						 toggleTab={this.toggleTab} />;
 		} else {
 			tabSpecificComponents = <EC.ManageUnits editIndividualUnit={this.editIndividualUnit}
@@ -88,7 +89,7 @@ EC.LessonPlanner = React.createClass({
 		}
 		return (
 			<span>
-				<EC.UnitTabs tab={this.state.tab} toggleTab={this.toggleTab}/>
+				<EC.UnitTabs tab={this.state.tab} isInEditIndividualUnitMode={this.state.isInEditIndividualUnitMode} toggleTab={this.toggleTab}/>
 				<div id="lesson_planner" >
 					{tabSpecificComponents}
 				</div>
