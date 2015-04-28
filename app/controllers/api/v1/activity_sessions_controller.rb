@@ -72,11 +72,16 @@ class Api::V1::ActivitySessionsController < ApiController
   end
 
   def activity_session_params
+    puts 'params before lms processing : '
+    puts params.to_json
     params.delete(:activity_session)
     @data = params.delete(:data)
     concept_tag_keys = [:concept_tag_name, :metadata => concept_tag_result_allowed_keys]
-    params.permit(:id, :percentage, :state, :time_spent, :completed_at, :activity_uid, :anonymous, concept_tag_results_attributes:  concept_tag_keys)
+    params = params.permit(:id, :percentage, :state, :time_spent, :completed_at, :activity_uid, :anonymous, concept_tag_results_attributes:  concept_tag_keys)
       .merge(data: @data).reject {|k,v| v.nil? }
+    puts 'params after lms processing : '
+    puts params.to_json
+    params
   end
 
   # Grab a list of all the arbitrarily-named keys that are provided in the concept tag results payload.
