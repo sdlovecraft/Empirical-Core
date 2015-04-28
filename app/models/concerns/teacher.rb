@@ -69,6 +69,7 @@ module Teacher
         {
           id: s.id,
           percentage: s.percentage,
+          all_concept_class_stats: s.all_concept_class_stats,
           due_date_or_completed_at_date: s.display_due_date_or_completed_at_date,
           activity: (ActivitySerializer.new(s.activity)).as_json(root: false)
         }

@@ -54,6 +54,7 @@ EC.ActivityIconWithTooltip = React.createClass({
         + "<p>" + topicCategoryName + "</p>"
         + "<p>" + this.displayPercentage() + "</p>"
         + "<p>" + this.props.data.due_date_or_completed_at_date + "</p>"
+        + this.props.data.all_concept_class_stats
     );
   },
 
